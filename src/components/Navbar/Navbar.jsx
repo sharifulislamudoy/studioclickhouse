@@ -74,7 +74,7 @@ const Navbar = () => {
     <motion.nav
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         isScrolled
-          ? 'bg-white/95 backdrop-blur-md shadow-lg border-b border-gray-200'
+          ? 'bg-white/40 backdrop-blur-md shadow-sm border-b border-gray-200'
           : 'bg-transparent'
       }`}
       initial={{ y: -100 }}
@@ -95,7 +95,7 @@ const Navbar = () => {
                 alt="PhotoEdit Pro"
                 width={160}
                 height={40}
-                className="h-10 w-auto"
+                className="h-15 w-auto"
               />
             </Link>
           </motion.div>
@@ -118,11 +118,11 @@ const Navbar = () => {
                 >
                   <Link
                     href={item.href}
-                    className="font-semibold text-gray-700 hover:text-blue-600 transition-colors duration-200 relative group"
+                    className="font-semibold text-gray-700 hover:text-green-600 transition-colors duration-200 relative group"
                   >
                     {item.label}
                     <motion.span
-                      className="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-600 group-hover:w-full transition-all duration-300"
+                      className="absolute -bottom-1 left-0 w-0 h-0.5 bg-green-600 group-hover:w-full transition-all duration-300"
                       initial={{ width: 0 }}
                       whileHover={{ width: '100%' }}
                     />
@@ -179,7 +179,7 @@ const Navbar = () => {
                   >
                     <Link
                       href={item.href}
-                      className="block px-3 py-2 font-semibold text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200"
+                      className="block px-3 py-2 font-semibold text-gray-700 hover:text-green-600 hover:bg-green-50 rounded-lg transition-all duration-200"
                     >
                       {item.label}
                     </Link>

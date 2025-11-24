@@ -20,7 +20,6 @@ import {
 } from 'lucide-react';
 
 const Hero = () => {
-  const [isMobile, setIsMobile] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
 
   // Mock images array - in real implementation, replace with actual images
@@ -34,16 +33,8 @@ const Hero = () => {
   // Duplicate images for seamless looping
   const duplicatedImages = [...sliderImages, ...sliderImages];
 
-  // Check if mobile - only on client side
   useEffect(() => {
     setIsMounted(true);
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-    
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
   // Marquee animation variants
@@ -142,160 +133,6 @@ const Hero = () => {
       repeat: Infinity,
       ease: "easeInOut"
     }
-  };
-
-  // Don't render marquees until mounted to avoid hydration mismatch
-  const renderMarquees = () => {
-    if (!isMounted) {
-      // Return a placeholder with the same dimensions during SSR
-      return (
-        <div className="flex gap-6 justify-center">
-          <div className="w-48 h-96 rounded-2xl overflow-hidden shadow-2xl relative bg-gray-200"></div>
-          <div className="w-48 h-96 rounded-2xl overflow-hidden shadow-2xl relative mt-12 bg-gray-200"></div>
-        </div>
-      );
-    }
-
-    // Desktop Layout - Vertical Marquees
-    if (!isMobile) {
-      return (
-        <div className="flex gap-6 justify-center relative">
-          {/* Animated Icons around the marquees */}
-          <motion.div
-            className="absolute -top-4 -left-4 text-emerald-600 bg-white/80 backdrop-blur-sm rounded-full p-2 shadow-lg"
-            animate={floatingAnimation}
-          >
-            <Wand2 className="w-6 h-6" />
-          </motion.div>
-          
-          <motion.div
-            className="absolute -bottom-4 -right-4 text-green-600 bg-white/80 backdrop-blur-sm rounded-full p-2 shadow-lg"
-            animate={rotatingAnimation}
-          >
-            <Sparkles className="w-7 h-7" />
-          </motion.div>
-
-          {/* First Marquee - Top to Bottom */}
-          <motion.div 
-            className="w-48 h-96 rounded-2xl overflow-hidden shadow-2xl relative border-2 border-emerald-200/30"
-            whileHover={{ scale: 1.02 }}
-            transition={{ type: "spring", stiffness: 300 }}
-          >
-            <motion.div
-              className="flex flex-col"
-              variants={marqueeVariants.vertical}
-              animate="animate"
-            >
-              {duplicatedImages.map((image, index) => (
-                <div key={index} className="w-48 h-96 relative flex-shrink-0 group">
-                  <Image
-                    src={image}
-                    alt={`Photo editing sample ${index + 1}`}
-                    fill
-                    className="object-cover group-hover:scale-110 transition-transform duration-500"
-                    sizes="(max-width: 768px) 100vw, 384px"
-                    priority={index < 2} // Prioritize first few images
-                  />
-                  <div className="absolute inset-0 bg-black/0 group-hover:bg-emerald-500/10 transition-all duration-300" />
-                </div>
-              ))}
-            </motion.div>
-          </motion.div>
-
-          {/* Second Marquee - Bottom to Top */}
-          <motion.div 
-            className="w-48 h-96 rounded-2xl overflow-hidden shadow-2xl relative mt-12 border-2 border-green-200/30"
-            whileHover={{ scale: 1.02 }}
-            transition={{ type: "spring", stiffness: 300 }}
-          >
-            <motion.div
-              className="flex flex-col"
-              variants={marqueeVariants.verticalReverse}
-              animate="animate"
-            >
-              {duplicatedImages.map((image, index) => (
-                <div key={index} className="w-48 h-96 relative flex-shrink-0 group">
-                  <Image
-                    src={image}
-                    alt={`Photo editing sample ${index + 1}`}
-                    fill
-                    className="object-cover group-hover:scale-110 transition-transform duration-500"
-                    sizes="(max-width: 768px) 100vw, 384px"
-                  />
-                  <div className="absolute inset-0 bg-black/0 group-hover:bg-green-500/10 transition-all duration-300" />
-                </div>
-              ))}
-            </motion.div>
-          </motion.div>
-        </div>
-      );
-    }
-
-    // Mobile Layout - Horizontal Marquees
-    return (
-      <div className="flex flex-col gap-6 items-center relative">
-        {/* Animated Icons for mobile */}
-        <motion.div
-          className="absolute -top-2 -left-2 text-emerald-600 bg-white/80 backdrop-blur-sm rounded-full p-1 shadow-lg"
-          animate={pulseAnimation}
-        >
-          <Zap className="w-4 h-4" />
-        </motion.div>
-
-        {/* First Marquee - Left to Right */}
-        <motion.div 
-          className="w-72 h-48 rounded-2xl overflow-hidden shadow-2xl relative border-2 border-emerald-200/30"
-          whileHover={{ scale: 1.02 }}
-          transition={{ type: "spring", stiffness: 300 }}
-        >
-          <motion.div
-            className="flex"
-            variants={marqueeVariants.horizontal}
-            animate="animate"
-          >
-            {duplicatedImages.map((image, index) => (
-              <div key={index} className="w-72 h-48 relative flex-shrink-0 group">
-                <Image
-                  src={image}
-                  alt={`Photo editing sample ${index + 1}`}
-                  fill
-                  className="object-cover group-hover:scale-110 transition-transform duration-500"
-                  sizes="(max-width: 768px) 100vw, 288px"
-                  priority={index < 2} // Prioritize first few images
-                />
-                <div className="absolute inset-0 bg-black/0 group-hover:bg-emerald-500/10 transition-all duration-300" />
-              </div>
-            ))}
-          </motion.div>
-        </motion.div>
-
-        {/* Second Marquee - Right to Left */}
-        <motion.div 
-          className="w-72 h-48 rounded-2xl overflow-hidden shadow-2xl relative border-2 border-green-200/30"
-          whileHover={{ scale: 1.02 }}
-          transition={{ type: "spring", stiffness: 300 }}
-        >
-          <motion.div
-            className="flex"
-            variants={marqueeVariants.horizontalReverse}
-            animate="animate"
-          >
-            {duplicatedImages.map((image, index) => (
-              <div key={index} className="w-72 h-48 relative flex-shrink-0 group">
-                <Image
-                  src={image}
-                  alt={`Photo editing sample ${index + 1}`}
-                  fill
-                  className="object-cover group-hover:scale-110 transition-transform duration-500"
-                  sizes="(max-width: 768px) 100vw, 288px"
-                />
-                <div className="absolute inset-0 bg-black/0 group-hover:bg-green-500/10 transition-all duration-300" />
-              </div>
-            ))}
-          </motion.div>
-        </motion.div>
-      </div>
-    );
   };
 
   return (
@@ -464,7 +301,138 @@ const Hero = () => {
             animate={{ opacity: 1, x: 0, scale: 1 }}
             transition={{ duration: 0.8, ease: "easeOut", delay: 0.3 }}
           >
-            {renderMarquees()}
+            {/* Desktop Layout - Hidden on mobile */}
+            <div className="hidden lg:flex gap-6 justify-center relative">
+              <motion.div
+                className="absolute -top-4 -left-4 text-emerald-600 bg-white/80 backdrop-blur-sm rounded-full p-2 shadow-lg"
+                animate={floatingAnimation}
+              >
+                <Wand2 className="w-6 h-6" />
+              </motion.div>
+              
+              <motion.div
+                className="absolute -bottom-4 -right-4 text-green-600 bg-white/80 backdrop-blur-sm rounded-full p-2 shadow-lg"
+                animate={rotatingAnimation}
+              >
+                <Sparkles className="w-7 h-7" />
+              </motion.div>
+
+              {/* First Marquee - Top to Bottom */}
+              <motion.div 
+                className="w-48 h-96 rounded-2xl overflow-hidden shadow-2xl relative border-2 border-emerald-200/30"
+                whileHover={{ scale: 1.02 }}
+                transition={{ type: "spring", stiffness: 300 }}
+              >
+                <motion.div
+                  className="flex flex-col"
+                  variants={marqueeVariants.vertical}
+                  animate="animate"
+                >
+                  {duplicatedImages.map((image, index) => (
+                    <div key={`desktop-1-${index}`} className="w-48 h-96 relative flex-shrink-0 group">
+                      <Image
+                        src={image}
+                        alt={`Photo editing sample ${index + 1}`}
+                        fill
+                        className="object-cover group-hover:scale-110 transition-transform duration-500"
+                        sizes="(max-width: 768px) 100vw, 384px"
+                        priority={index < 2}
+                      />
+                      <div className="absolute inset-0 bg-black/0 group-hover:bg-emerald-500/10 transition-all duration-300" />
+                    </div>
+                  ))}
+                </motion.div>
+              </motion.div>
+
+              {/* Second Marquee - Bottom to Top */}
+              <motion.div 
+                className="w-48 h-96 rounded-2xl overflow-hidden shadow-2xl relative mt-12 border-2 border-green-200/30"
+                whileHover={{ scale: 1.02 }}
+                transition={{ type: "spring", stiffness: 300 }}
+              >
+                <motion.div
+                  className="flex flex-col"
+                  variants={marqueeVariants.verticalReverse}
+                  animate="animate"
+                >
+                  {duplicatedImages.map((image, index) => (
+                    <div key={`desktop-2-${index}`} className="w-48 h-96 relative flex-shrink-0 group">
+                      <Image
+                        src={image}
+                        alt={`Photo editing sample ${index + 1}`}
+                        fill
+                        className="object-cover group-hover:scale-110 transition-transform duration-500"
+                        sizes="(max-width: 768px) 100vw, 384px"
+                      />
+                      <div className="absolute inset-0 bg-black/0 group-hover:bg-green-500/10 transition-all duration-300" />
+                    </div>
+                  ))}
+                </motion.div>
+              </motion.div>
+            </div>
+
+            {/* Mobile Layout - Hidden on desktop */}
+            <div className="lg:hidden flex flex-col gap-6 items-center relative">
+              <motion.div
+                className="absolute -top-2 -left-2 text-emerald-600 bg-white/80 backdrop-blur-sm rounded-full p-1 shadow-lg"
+                animate={pulseAnimation}
+              >
+                <Zap className="w-4 h-4" />
+              </motion.div>
+
+              {/* First Marquee - Left to Right */}
+              <motion.div 
+                className="w-72 h-48 rounded-2xl overflow-hidden shadow-2xl relative border-2 border-emerald-200/30"
+                whileHover={{ scale: 1.02 }}
+                transition={{ type: "spring", stiffness: 300 }}
+              >
+                <motion.div
+                  className="flex"
+                  variants={marqueeVariants.horizontal}
+                  animate="animate"
+                >
+                  {duplicatedImages.map((image, index) => (
+                    <div key={`mobile-1-${index}`} className="w-72 h-48 relative flex-shrink-0 group">
+                      <Image
+                        src={image}
+                        alt={`Photo editing sample ${index + 1}`}
+                        fill
+                        className="object-cover group-hover:scale-110 transition-transform duration-500"
+                        sizes="(max-width: 768px) 100vw, 288px"
+                        priority={index < 2}
+                      />
+                      <div className="absolute inset-0 bg-black/0 group-hover:bg-emerald-500/10 transition-all duration-300" />
+                    </div>
+                  ))}
+                </motion.div>
+              </motion.div>
+
+              {/* Second Marquee - Right to Left */}
+              <motion.div 
+                className="w-72 h-48 rounded-2xl overflow-hidden shadow-2xl relative border-2 border-green-200/30"
+                whileHover={{ scale: 1.02 }}
+                transition={{ type: "spring", stiffness: 300 }}
+              >
+                <motion.div
+                  className="flex"
+                  variants={marqueeVariants.horizontalReverse}
+                  animate="animate"
+                >
+                  {duplicatedImages.map((image, index) => (
+                    <div key={`mobile-2-${index}`} className="w-72 h-48 relative flex-shrink-0 group">
+                      <Image
+                        src={image}
+                        alt={`Photo editing sample ${index + 1}`}
+                        fill
+                        className="object-cover group-hover:scale-110 transition-transform duration-500"
+                        sizes="(max-width: 768px) 100vw, 288px"
+                      />
+                      <div className="absolute inset-0 bg-black/0 group-hover:bg-green-500/10 transition-all duration-300" />
+                    </div>
+                  ))}
+                </motion.div>
+              </motion.div>
+            </div>
           </motion.div>
         </div>
       </div>
