@@ -1,96 +1,324 @@
 'use client';
 
-import { motion, useAnimation } from 'framer-motion';
-import { useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import Image from 'next/image';
+import { motion, AnimatePresence } from 'framer-motion';
 
-export default function Hero() {
-  const col1Controls = useAnimation();
-  const col2Controls = useAnimation();
+const Hero = () => {
+  const [currentSlide1, setCurrentSlide1] = useState(0);
+  const [currentSlide2, setCurrentSlide2] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
 
-  const startMarquee = (controls, direction) => {
-    controls.start({
-      y: direction === 'down' ? ['-100%', '0%'] : ['0%', '-100%'],
-      transition: {
-        duration: 12,
-        repeat: Infinity,
-        ease: 'linear',
-      },
-    });
-  };
+  // Mock images array - in real implementation, replace with actual images
+  const sliderImages = [
+    '/photos/logo.webp',
+    '/photos/logo.webp',
+    '/photos/logo.webp',
+    '/photos/logo.webp',
+  ];
 
+  // Check if mobile
   useEffect(() => {
-    startMarquee(col1Controls, 'down');
-    startMarquee(col2Controls, 'up');
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  const pause = (controls) => controls.stop();
+  // Auto slide for vertical sliders (desktop)
+  useEffect(() => {
+    if (isMobile) return;
+
+    const interval1 = setInterval(() => {
+      setCurrentSlide1((prev) => (prev + 1) % sliderImages.length);
+    }, 3000);
+
+    const interval2 = setInterval(() => {
+      setCurrentSlide2((prev) => (prev + 1) % sliderImages.length);
+    }, 3200);
+
+    return () => {
+      clearInterval(interval1);
+      clearInterval(interval2);
+    };
+  }, [isMobile, sliderImages.length]);
+
+  // Auto slide for horizontal sliders (mobile)
+  useEffect(() => {
+    if (!isMobile) return;
+
+    const interval1 = setInterval(() => {
+      setCurrentSlide1((prev) => (prev + 1) % sliderImages.length);
+    }, 3000);
+
+    const interval2 = setInterval(() => {
+      setCurrentSlide2((prev) => (prev + 1) % sliderImages.length);
+    }, 3200);
+
+    return () => {
+      clearInterval(interval1);
+      clearInterval(interval2);
+    };
+  }, [isMobile, sliderImages.length]);
+
+  const sliderVariants = {
+    vertical: {
+      enter: (direction) => ({
+        y: direction > 0 ? -1000 : 1000,
+        opacity: 0,
+      }),
+      center: {
+        zIndex: 1,
+        y: 0,
+        opacity: 1,
+      },
+      exit: (direction) => ({
+        zIndex: 0,
+        y: direction < 0 ? -1000 : 1000,
+        opacity: 0,
+      }),
+    },
+    horizontal: {
+      enter: (direction) => ({
+        x: direction > 0 ? 1000 : -1000,
+        opacity: 0,
+      }),
+      center: {
+        zIndex: 1,
+        x: 0,
+        opacity: 1,
+      },
+      exit: (direction) => ({
+        zIndex: 0,
+        x: direction < 0 ? 1000 : -1000,
+        opacity: 0,
+      }),
+    },
+  };
 
   return (
-    <section className="relative h-screen w-full flex flex-col justify-center items-center">
-      {/* Background Video */}
-      <video
-        className="absolute top-0 left-0 h-full w-full object-cover"
-        src="/bg-video.mp4"
-        autoPlay
-        muted
-        loop
-      ></video>
-
-      <div className="absolute inset-0 bg-black/40"></div>
-
-      <div className="relative z-10 h-full w-full grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2 gap-10 px-6 py-10 items-center">
-        
-        {/* LEFT SIDE */}
-        <div className="text-white flex flex-col justify-center items-start">
-          <h1 className="text-4xl lg:text-6xl font-bold leading-tight mb-6">
-            Professional Photo Editing & Retouching Services
-          </h1>
-
-          <button className="px-6 py-3 bg-white text-black font-semibold rounded-lg hover:bg-gray-200 transition">
-            Try Free With Quote
-          </button>
-        </div>
-
-        {/* RIGHT SIDE: MARQUEE */}
-        <div className="relative w-full flex flex-col gap-6 overflow-hidden lg:h-[80vh]">
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 h-full">
-
-            {/* COLUMN 1: top to bottom */}
-            <motion.div
-              className="flex flex-col gap-6 cursor-pointer"
-              animate={col1Controls}
-              onMouseEnter={() => pause(col1Controls)}
-              onMouseLeave={() => startMarquee(col1Controls, 'down')}
+    <section className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 pt-16 overflow-hidden">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-24">
+        <div className="flex flex-col lg:flex-row items-center justify-between gap-12">
+          {/* Left Side - Text Content */}
+          <motion.div 
+            className="lg:w-1/2 text-center lg:text-left"
+            initial={{ opacity: 0, x: -50 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+          >
+            <motion.h1 
+              className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6"
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
             >
-              {Array.from({ length: 8 }).map((_, i) => (
-                <img
-                  key={i}
-                  src="/photos/logo.webp"
-                  className="w-full opacity-40 hover:opacity-100 transition"
-                />
-              ))}
+              Professional{' '}
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">
+                Photo Editing
+              </span>{' '}
+              Services
+            </motion.h1>
+            
+            <motion.p 
+              className="text-xl text-gray-600 mb-8 leading-relaxed"
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.4 }}
+            >
+              Transform your images with our expert editing services. 
+              From basic enhancements to advanced retouching, we deliver 
+              stunning results that bring your vision to life.
+            </motion.p>
+            
+            <motion.div 
+              className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start"
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.6 }}
+            >
+              <button className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-8 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg">
+                Start Free Trial
+              </button>
+              <button className="border-2 border-gray-300 hover:border-blue-600 text-gray-700 hover:text-blue-600 font-semibold py-3 px-8 rounded-lg transition-all duration-300 transform hover:scale-105">
+                View Portfolio
+              </button>
             </motion.div>
 
-            {/* COLUMN 2: bottom to top */}
-            <motion.div
-              className="flex flex-col gap-6 cursor-pointer"
-              animate={col2Controls}
-              onMouseEnter={() => pause(col2Controls)}
-              onMouseLeave={() => startMarquee(col2Controls, 'up')}
+            <motion.div 
+              className="mt-12 flex items-center justify-center lg:justify-start gap-8 text-sm text-gray-500"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.8, delay: 0.8 }}
             >
-              {Array.from({ length: 8 }).map((_, i) => (
-                <img
-                  key={i}
-                  src="/photos/logo.webp"
-                  className="w-full opacity-40 hover:opacity-100 transition"
-                />
-              ))}
+              <div className="text-center">
+                <div className="text-2xl font-bold text-gray-900">500+</div>
+                <div>Projects Completed</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-gray-900">99%</div>
+                <div>Client Satisfaction</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-gray-900">24/7</div>
+                <div>Support</div>
+              </div>
             </motion.div>
+          </motion.div>
 
-          </div>
+          {/* Right Side - Sliders */}
+          <motion.div 
+            className="lg:w-1/2 w-full max-w-2xl"
+            initial={{ opacity: 0, x: 50 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+          >
+            {/* Desktop Layout - Vertical Sliders */}
+            {!isMobile && (
+              <div className="flex gap-6 justify-center">
+                {/* First Slider - Top to Bottom */}
+                <motion.div 
+                  className="w-48 h-96 rounded-2xl overflow-hidden shadow-2xl relative"
+                  whileHover={{ scale: 1.05 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <AnimatePresence mode="wait" custom={1}>
+                    <motion.div
+                      key={currentSlide1}
+                      custom={1}
+                      variants={sliderVariants.vertical}
+                      initial="enter"
+                      animate="center"
+                      exit="exit"
+                      transition={{
+                        y: { type: "spring", stiffness: 300, damping: 30 },
+                        opacity: { duration: 0.2 }
+                      }}
+                      className="absolute inset-0"
+                    >
+                      <Image
+                        src={sliderImages[currentSlide1]}
+                        alt="Photo editing sample"
+                        fill
+                        className="object-cover"
+                        sizes="(max-width: 768px) 100vw, 384px"
+                      />
+                    </motion.div>
+                  </AnimatePresence>
+                </motion.div>
+
+                {/* Second Slider - Bottom to Top */}
+                <motion.div 
+                  className="w-48 h-96 rounded-2xl overflow-hidden shadow-2xl relative mt-12"
+                  whileHover={{ scale: 1.05 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <AnimatePresence mode="wait" custom={-1}>
+                    <motion.div
+                      key={currentSlide2}
+                      custom={-1}
+                      variants={sliderVariants.vertical}
+                      initial="enter"
+                      animate="center"
+                      exit="exit"
+                      transition={{
+                        y: { type: "spring", stiffness: 300, damping: 30 },
+                        opacity: { duration: 0.2 }
+                      }}
+                      className="absolute inset-0"
+                    >
+                      <Image
+                        src={sliderImages[currentSlide2]}
+                        alt="Photo editing sample"
+                        fill
+                        className="object-cover"
+                        sizes="(max-width: 768px) 100vw, 384px"
+                      />
+                    </motion.div>
+                  </AnimatePresence>
+                </motion.div>
+              </div>
+            )}
+
+            {/* Mobile Layout - Horizontal Sliders */}
+            {isMobile && (
+              <div className="flex flex-col gap-6 items-center">
+                {/* First Slider - Left to Right */}
+                <motion.div 
+                  className="w-72 h-48 rounded-2xl overflow-hidden shadow-2xl relative"
+                  whileHover={{ scale: 1.02 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <AnimatePresence mode="wait" custom={1}>
+                    <motion.div
+                      key={currentSlide1}
+                      custom={1}
+                      variants={sliderVariants.horizontal}
+                      initial="enter"
+                      animate="center"
+                      exit="exit"
+                      transition={{
+                        x: { type: "spring", stiffness: 300, damping: 30 },
+                        opacity: { duration: 0.2 }
+                      }}
+                      className="absolute inset-0"
+                    >
+                      <Image
+                        src={sliderImages[currentSlide1]}
+                        alt="Photo editing sample"
+                        fill
+                        className="object-cover"
+                        sizes="(max-width: 768px) 100vw, 288px"
+                      />
+                    </motion.div>
+                  </AnimatePresence>
+                </motion.div>
+
+                {/* Second Slider - Right to Left */}
+                <motion.div 
+                  className="w-72 h-48 rounded-2xl overflow-hidden shadow-2xl relative"
+                  whileHover={{ scale: 1.02 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <AnimatePresence mode="wait" custom={-1}>
+                    <motion.div
+                      key={currentSlide2}
+                      custom={-1}
+                      variants={sliderVariants.horizontal}
+                      initial="enter"
+                      animate="center"
+                      exit="exit"
+                      transition={{
+                        x: { type: "spring", stiffness: 300, damping: 30 },
+                        opacity: { duration: 0.2 }
+                      }}
+                      className="absolute inset-0"
+                    >
+                      <Image
+                        src={sliderImages[currentSlide2]}
+                        alt="Photo editing sample"
+                        fill
+                        className="object-cover"
+                        sizes="(max-width: 768px) 100vw, 288px"
+                      />
+                    </motion.div>
+                  </AnimatePresence>
+                </motion.div>
+              </div>
+            )}
+          </motion.div>
         </div>
       </div>
+
+      {/* Background decorative elements */}
+      <div className="absolute top-0 left-0 w-72 h-72 bg-blue-200 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob"></div>
+      <div className="absolute top-0 right-0 w-72 h-72 bg-purple-200 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-2000"></div>
+      <div className="absolute -bottom-8 left-20 w-72 h-72 bg-pink-200 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-4000"></div>
     </section>
   );
-}
+};
+
+export default Hero;
