@@ -202,10 +202,10 @@ const Hero = () => {
               transition={{ duration: 0.8, delay: 0.2 }}
             >
               Transform Your{' '}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-green-600 relative">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-green-500 relative">
                 Images
                 <motion.div
-                  className="absolute -bottom-2 left-0 w-full h-1 bg-gradient-to-r from-emerald-600 to-green-600 rounded-full"
+                  className="absolute -bottom-2 left-0 w-full h-1 bg-gradient-to-r from-emerald-600 to-green-500 rounded-full"
                   initial={{ scaleX: 0 }}
                   animate={{ scaleX: 1 }}
                   transition={{ duration: 0.8, delay: 0.8 }}
@@ -232,7 +232,7 @@ const Hero = () => {
               transition={{ duration: 0.8, delay: 0.6 }}
             >
               <motion.button 
-                className="bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 text-white font-semibold py-4 px-8 rounded-xl transition-all duration-300 shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 flex items-center gap-2 group"
+                className="bg-gradient-to-r from-emerald-600 to-green-500 hover:from-emerald-700 hover:to-green-700 text-white font-semibold py-4 px-8 rounded-xl transition-all duration-300 shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 flex items-center gap-2 group"
                 whileHover={{ scale: 1.05, y: -2 }}
                 whileTap={{ scale: 0.95 }}
               >
@@ -311,7 +311,7 @@ const Hero = () => {
               </motion.div>
               
               <motion.div
-                className="absolute -bottom-4 -right-4 text-green-600 bg-white/80 backdrop-blur-sm rounded-full p-2 shadow-lg"
+                className="absolute -bottom-4 -right-4 text-green-500 bg-white/80 backdrop-blur-sm rounded-full p-2 shadow-lg"
                 animate={rotatingAnimation}
               >
                 <Sparkles className="w-7 h-7" />

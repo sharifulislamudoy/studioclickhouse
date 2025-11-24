@@ -118,11 +118,11 @@ const Navbar = () => {
                 >
                   <Link
                     href={item.href}
-                    className="font-semibold text-gray-700 hover:text-green-600 transition-colors duration-200 relative group"
+                    className="font-semibold text-gray-700 hover:text-green-500 transition-colors duration-200 relative group"
                   >
                     {item.label}
                     <motion.span
-                      className="absolute -bottom-1 left-0 w-0 h-0.5 bg-green-600 group-hover:w-full transition-all duration-300"
+                      className="absolute -bottom-1 left-0 w-0 h-0.5 bg-green-500 group-hover:w-full transition-all duration-300"
                       initial={{ width: 0 }}
                       whileHover={{ width: '100%' }}
                     />
@@ -179,7 +179,7 @@ const Navbar = () => {
                   >
                     <Link
                       href={item.href}
-                      className="block px-3 py-2 font-semibold text-gray-700 hover:text-green-600 hover:bg-green-50 rounded-lg transition-all duration-200"
+                      className="block px-3 py-2 font-semibold text-gray-700 hover:text-green-500 hover:bg-green-50 rounded-lg transition-all duration-200"
                     >
                       {item.label}
                     </Link>
