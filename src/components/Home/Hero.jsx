@@ -1,12 +1,10 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 
 const Hero = () => {
-  const [currentSlide1, setCurrentSlide1] = useState(0);
-  const [currentSlide2, setCurrentSlide2] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
 
   // Mock images array - in real implementation, replace with actual images
@@ -16,6 +14,9 @@ const Hero = () => {
     '/photos/logo.webp',
     '/photos/logo.webp',
   ];
+
+  // Duplicate images for seamless looping
+  const duplicatedImages = [...sliderImages, ...sliderImages];
 
   // Check if mobile
   useEffect(() => {
@@ -28,74 +29,59 @@ const Hero = () => {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  // Auto slide for vertical sliders (desktop)
-  useEffect(() => {
-    if (isMobile) return;
-
-    const interval1 = setInterval(() => {
-      setCurrentSlide1((prev) => (prev + 1) % sliderImages.length);
-    }, 3000);
-
-    const interval2 = setInterval(() => {
-      setCurrentSlide2((prev) => (prev + 1) % sliderImages.length);
-    }, 3200);
-
-    return () => {
-      clearInterval(interval1);
-      clearInterval(interval2);
-    };
-  }, [isMobile, sliderImages.length]);
-
-  // Auto slide for horizontal sliders (mobile)
-  useEffect(() => {
-    if (!isMobile) return;
-
-    const interval1 = setInterval(() => {
-      setCurrentSlide1((prev) => (prev + 1) % sliderImages.length);
-    }, 3000);
-
-    const interval2 = setInterval(() => {
-      setCurrentSlide2((prev) => (prev + 1) % sliderImages.length);
-    }, 3200);
-
-    return () => {
-      clearInterval(interval1);
-      clearInterval(interval2);
-    };
-  }, [isMobile, sliderImages.length]);
-
-  const sliderVariants = {
+  // Marquee animation variants
+  const marqueeVariants = {
     vertical: {
-      enter: (direction) => ({
-        y: direction > 0 ? -1000 : 1000,
-        opacity: 0,
-      }),
-      center: {
-        zIndex: 1,
-        y: 0,
-        opacity: 1,
+      animate: {
+        y: [0, -100 * sliderImages.length],
+        transition: {
+          y: {
+            repeat: Infinity,
+            repeatType: "loop",
+            duration: 20,
+            ease: "linear",
+          },
+        },
       },
-      exit: (direction) => ({
-        zIndex: 0,
-        y: direction < 0 ? -1000 : 1000,
-        opacity: 0,
-      }),
+    },
+    verticalReverse: {
+      animate: {
+        y: [-100 * sliderImages.length, 0],
+        transition: {
+          y: {
+            repeat: Infinity,
+            repeatType: "loop",
+            duration: 20,
+            ease: "linear",
+          },
+        },
+      },
     },
     horizontal: {
-      enter: (direction) => ({
-        x: direction > 0 ? 1000 : -1000,
-        opacity: 0,
-      }),
-      center: {
-        zIndex: 1,
-        x: 0,
-        opacity: 1,
+      animate: {
+        x: [0, -100 * sliderImages.length],
+        transition: {
+          x: {
+            repeat: Infinity,
+            repeatType: "loop",
+            duration: 20,
+            ease: "linear",
+          },
+        },
       },
-      exit: (direction) => ({
-        zIndex: 0,
-        x: direction < 0 ? 1000 : -1000,
-        opacity: 0,
-      }),
+    },
+    horizontalReverse: {
+      animate: {
+        x: [-100 * sliderImages.length, 0],
+        transition: {
+          x: {
+            repeat: Infinity,
+            repeatType: "loop",
+            duration: 20,
+            ease: "linear",
+          },
+        },
+      },
     },
   };
 
@@ -169,144 +155,104 @@ const Hero = () => {
             </motion.div>
           </motion.div>
 
-          {/* Right Side - Sliders */}
+          {/* Right Side - Marquee Sliders */}
           <motion.div 
             className="lg:w-1/2 w-full max-w-2xl"
             initial={{ opacity: 0, x: 50 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
           >
-            {/* Desktop Layout - Vertical Sliders */}
+            {/* Desktop Layout - Vertical Marquees */}
             {!isMobile && (
               <div className="flex gap-6 justify-center">
-                {/* First Slider - Top to Bottom */}
-                <motion.div 
-                  className="w-48 h-96 rounded-2xl overflow-hidden shadow-2xl relative"
-                  whileHover={{ scale: 1.05 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  <AnimatePresence mode="wait" custom={1}>
-                    <motion.div
-                      key={currentSlide1}
-                      custom={1}
-                      variants={sliderVariants.vertical}
-                      initial="enter"
-                      animate="center"
-                      exit="exit"
-                      transition={{
-                        y: { type: "spring", stiffness: 300, damping: 30 },
-                        opacity: { duration: 0.2 }
-                      }}
-                      className="absolute inset-0"
-                    >
-                      <Image
-                        src={sliderImages[currentSlide1]}
-                        alt="Photo editing sample"
-                        fill
-                        className="object-cover"
-                        sizes="(max-width: 768px) 100vw, 384px"
-                      />
-                    </motion.div>
-                  </AnimatePresence>
-                </motion.div>
+                {/* First Marquee - Top to Bottom */}
+                <div className="w-48 h-96 rounded-2xl overflow-hidden shadow-2xl relative">
+                  <motion.div
+                    className="flex flex-col"
+                    variants={marqueeVariants.vertical}
+                    animate="animate"
+                  >
+                    {duplicatedImages.map((image, index) => (
+                      <div key={index} className="w-48 h-96 relative flex-shrink-0">
+                        <Image
+                          src={image}
+                          alt={`Photo editing sample ${index + 1}`}
+                          fill
+                          className="object-cover"
+                          sizes="(max-width: 768px) 100vw, 384px"
+                        />
+                      </div>
+                    ))}
+                  </motion.div>
+                </div>
 
-                {/* Second Slider - Bottom to Top */}
-                <motion.div 
-                  className="w-48 h-96 rounded-2xl overflow-hidden shadow-2xl relative mt-12"
-                  whileHover={{ scale: 1.05 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  <AnimatePresence mode="wait" custom={-1}>
-                    <motion.div
-                      key={currentSlide2}
-                      custom={-1}
-                      variants={sliderVariants.vertical}
-                      initial="enter"
-                      animate="center"
-                      exit="exit"
-                      transition={{
-                        y: { type: "spring", stiffness: 300, damping: 30 },
-                        opacity: { duration: 0.2 }
-                      }}
-                      className="absolute inset-0"
-                    >
-                      <Image
-                        src={sliderImages[currentSlide2]}
-                        alt="Photo editing sample"
-                        fill
-                        className="object-cover"
-                        sizes="(max-width: 768px) 100vw, 384px"
-                      />
-                    </motion.div>
-                  </AnimatePresence>
-                </motion.div>
+                {/* Second Marquee - Bottom to Top */}
+                <div className="w-48 h-96 rounded-2xl overflow-hidden shadow-2xl relative mt-12">
+                  <motion.div
+                    className="flex flex-col"
+                    variants={marqueeVariants.verticalReverse}
+                    animate="animate"
+                  >
+                    {duplicatedImages.map((image, index) => (
+                      <div key={index} className="w-48 h-96 relative flex-shrink-0">
+                        <Image
+                          src={image}
+                          alt={`Photo editing sample ${index + 1}`}
+                          fill
+                          className="object-cover"
+                          sizes="(max-width: 768px) 100vw, 384px"
+                        />
+                      </div>
+                    ))}
+                  </motion.div>
+                </div>
               </div>
             )}
 
-            {/* Mobile Layout - Horizontal Sliders */}
+            {/* Mobile Layout - Horizontal Marquees */}
             {isMobile && (
               <div className="flex flex-col gap-6 items-center">
-                {/* First Slider - Left to Right */}
-                <motion.div 
-                  className="w-72 h-48 rounded-2xl overflow-hidden shadow-2xl relative"
-                  whileHover={{ scale: 1.02 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  <AnimatePresence mode="wait" custom={1}>
-                    <motion.div
-                      key={currentSlide1}
-                      custom={1}
-                      variants={sliderVariants.horizontal}
-                      initial="enter"
-                      animate="center"
-                      exit="exit"
-                      transition={{
-                        x: { type: "spring", stiffness: 300, damping: 30 },
-                        opacity: { duration: 0.2 }
-                      }}
-                      className="absolute inset-0"
-                    >
-                      <Image
-                        src={sliderImages[currentSlide1]}
-                        alt="Photo editing sample"
-                        fill
-                        className="object-cover"
-                        sizes="(max-width: 768px) 100vw, 288px"
-                      />
-                    </motion.div>
-                  </AnimatePresence>
-                </motion.div>
+                {/* First Marquee - Left to Right */}
+                <div className="w-72 h-48 rounded-2xl overflow-hidden shadow-2xl relative">
+                  <motion.div
+                    className="flex"
+                    variants={marqueeVariants.horizontal}
+                    animate="animate"
+                  >
+                    {duplicatedImages.map((image, index) => (
+                      <div key={index} className="w-72 h-48 relative flex-shrink-0">
+                        <Image
+                          src={image}
+                          alt={`Photo editing sample ${index + 1}`}
+                          fill
+                          className="object-cover"
+                          sizes="(max-width: 768px) 100vw, 288px"
+                        />
+                      </div>
+                    ))}
+                  </motion.div>
+                </div>
 
-                {/* Second Slider - Right to Left */}
-                <motion.div 
-                  className="w-72 h-48 rounded-2xl overflow-hidden shadow-2xl relative"
-                  whileHover={{ scale: 1.02 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  <AnimatePresence mode="wait" custom={-1}>
-                    <motion.div
-                      key={currentSlide2}
-                      custom={-1}
-                      variants={sliderVariants.horizontal}
-                      initial="enter"
-                      animate="center"
-                      exit="exit"
-                      transition={{
-                        x: { type: "spring", stiffness: 300, damping: 30 },
-                        opacity: { duration: 0.2 }
-                      }}
-                      className="absolute inset-0"
-                    >
-                      <Image
-                        src={sliderImages[currentSlide2]}
-                        alt="Photo editing sample"
-                        fill
-                        className="object-cover"
-                        sizes="(max-width: 768px) 100vw, 288px"
-                      />
-                    </motion.div>
-                  </AnimatePresence>
-                </motion.div>
+                {/* Second Marquee - Right to Left */}
+                <div className="w-72 h-48 rounded-2xl overflow-hidden shadow-2xl relative">
+                  <motion.div
+                    className="flex"
+                    variants={marqueeVariants.horizontalReverse}
+                    animate="animate"
+                  >
+                    {duplicatedImages.map((image, index) => (
+                      <div key={index} className="w-72 h-48 relative flex-shrink-0">
+                        <Image
+                          src={image}
+                          alt={`Photo editing sample ${index + 1}`}
+                          fill
+                          className="object-cover"
+                          sizes="(max-width: 768px) 100vw, 288px"
+                        />
+                      </div>
+                    ))}
+                  </motion.div>
+                </div>
               </div>
             )}
           </motion.div>
