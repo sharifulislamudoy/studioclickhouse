@@ -81,7 +81,7 @@ const Navbar = () => {
       animate={{ y: 0 }}
       transition={{ duration: 0.6, ease: 'easeOut' }}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="w-11/12 mx-auto px-4">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <motion.div

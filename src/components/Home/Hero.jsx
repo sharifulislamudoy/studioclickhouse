@@ -13,86 +13,13 @@ import {
   ArrowRight,
   Eye,
   CheckCircle,
-  Clock,
   Users,
   Palette,
-  Image as ImageIcon
+  Image as ImageIcon,
+  Aperture
 } from 'lucide-react';
 
 const Hero = () => {
-  const [isMounted, setIsMounted] = useState(false);
-
-  // Mock images array - in real implementation, replace with actual images
-  const sliderImages = [
-    '/photos/logo.webp',
-    '/photos/logo.webp',
-    '/photos/logo.webp',
-    '/photos/logo.webp',
-  ];
-
-  // Duplicate images for seamless looping
-  const duplicatedImages = [...sliderImages, ...sliderImages];
-
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
-  // Marquee animation variants
-  const marqueeVariants = {
-    vertical: {
-      animate: {
-        y: [0, -100 * sliderImages.length],
-        transition: {
-          y: {
-            repeat: Infinity,
-            repeatType: "loop",
-            duration: 20,
-            ease: "linear",
-          },
-        },
-      },
-    },
-    verticalReverse: {
-      animate: {
-        y: [-100 * sliderImages.length, 0],
-        transition: {
-          y: {
-            repeat: Infinity,
-            repeatType: "loop",
-            duration: 20,
-            ease: "linear",
-          },
-        },
-      },
-    },
-    horizontal: {
-      animate: {
-        x: [0, -100 * sliderImages.length],
-        transition: {
-          x: {
-            repeat: Infinity,
-            repeatType: "loop",
-            duration: 20,
-            ease: "linear",
-          },
-        },
-      },
-    },
-    horizontalReverse: {
-      animate: {
-        x: [-100 * sliderImages.length, 0],
-        transition: {
-          x: {
-            repeat: Infinity,
-            repeatType: "loop",
-            duration: 20,
-            ease: "linear",
-          },
-        },
-      },
-    },
-  };
-
   // Floating animation for icons
   const floatingAnimation = {
     y: [0, -15, 0],
@@ -135,8 +62,51 @@ const Hero = () => {
     }
   };
 
+  // Photo animation variants
+  const photoVariants = {
+    initial: {
+      scale: 0,
+      opacity: 0,
+      rotate: -5
+    },
+    animate: {
+      scale: 1,
+      opacity: 1,
+      rotate: 0,
+      transition: {
+        type: "spring",
+        stiffness: 100,
+        damping: 15,
+        duration: 1.2
+      }
+    }
+  };
+
+  const photoFloat = {
+    float: {
+      y: [0, -20, 0],
+      transition: {
+        duration: 3,
+        repeat: Infinity,
+        ease: "easeInOut"
+      }
+    }
+  };
+
+  const photoPulse = {
+    pulse: {
+      scale: [1, 1.05, 1],
+      transition: {
+        duration: 4,
+        repeat: Infinity,
+        ease: "easeInOut"
+      }
+    }
+  };
+
   return (
-    <motion.div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-green-50 pt-16 overflow-hidden relative"
+    <motion.div
+      className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-green-50 pt-16 overflow-hidden relative"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.8, delay: 0.2 }}
@@ -151,7 +121,7 @@ const Hero = () => {
         className="absolute top-1/4 left-10 text-emerald-300 bg-white/50 backdrop-blur-sm rounded-full p-3 shadow-lg"
         animate={floatingAnimation}
       >
-        <Camera className="w-8 h-8" />
+        <Aperture className="w-8 h-8" />
       </motion.div>
 
       <motion.div
@@ -175,11 +145,11 @@ const Hero = () => {
         <Zap className="w-5 h-5" />
       </motion.div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-24 relative z-10">
-        <div className="flex flex-col lg:flex-row items-center justify-between gap-12">
+      <div className="w-11/12 mx-auto px-4 py-12 lg:py-24 relative z-10">
+        <div className="flex flex-col-reverse lg:flex-row items-center justify-between gap-12">
           {/* Left Side - Text Content */}
           <motion.div
-            className="lg:w-1/2 text-center lg:text-left"
+            className="flex-1 text-center lg:text-left"
             initial={{ opacity: 0, x: -50 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
@@ -298,145 +268,122 @@ const Hero = () => {
             </motion.div>
           </motion.div>
 
-          {/* Right Side - Marquee Sliders */}
+          {/* Right Side - Photo */}
           <motion.div
-            className="lg:w-1/2 w-full max-w-2xl"
+            className="flex-1 flex justify-center relative"
             initial={{ opacity: 0, x: 50, scale: 0.9 }}
             animate={{ opacity: 1, x: 0, scale: 1 }}
             transition={{ duration: 0.8, ease: "easeOut", delay: 0.3 }}
           >
-            {/* Desktop Layout - Hidden on mobile */}
-            <div className="hidden lg:flex gap-6 justify-center relative">
+            {/* Photo Container */}
+            <motion.div
+              className="relative"
+              variants={photoVariants}
+              initial="initial"
+              animate="animate"
+            >
+              {/* Photo Shadow */}
               <motion.div
-                className="absolute -top-4 -left-4 text-emerald-600 bg-white/80 backdrop-blur-sm rounded-full p-2 shadow-lg"
-                animate={floatingAnimation}
-              >
-                <Wand2 className="w-6 h-6" />
-              </motion.div>
+                className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 w-4/5 h-6 rounded-full blur-xl"
+                animate={{
+                  scale: [0.8, 1.2, 0.8],
+                  opacity: [0.3, 0.5, 0.3]
+                }}
+                transition={{
+                  duration: 3,
+                  repeat: Infinity,
+                  ease: "easeInOut"
+                }}
+              />
 
+              {/* Main Photo */}
               <motion.div
-                className="absolute -bottom-4 -right-4 text-green-500 bg-white/80 backdrop-blur-sm rounded-full p-2 shadow-lg"
-                animate={rotatingAnimation}
-              >
-                <Sparkles className="w-7 h-7" />
-              </motion.div>
-
-              {/* First Marquee - Top to Bottom */}
-              <motion.div
-                className="w-48 h-96 rounded-2xl overflow-hidden shadow-2xl relative border-2 border-emerald-200/30"
-                whileHover={{ scale: 1.02 }}
+                className="relative rounded-2xl overflow-hidden"
+                variants={photoFloat}
+                animate="float"
+                whileHover={{ scale: 1.02, y: -5 }}
                 transition={{ type: "spring", stiffness: 300 }}
               >
                 <motion.div
-                  className="flex flex-col"
-                  variants={marqueeVariants.vertical}
-                  animate="animate"
+                  variants={photoPulse}
+                  animate="pulse"
                 >
-                  {duplicatedImages.map((image, index) => (
-                    <div key={`desktop-1-${index}`} className="w-48 h-96 relative flex-shrink-0 group">
-                      <Image
-                        src={image}
-                        alt={`Photo editing sample ${index + 1}`}
-                        fill
-                        className="object-cover group-hover:scale-110 transition-transform duration-500"
-                        sizes="(max-width: 768px) 100vw, 384px"
-                        priority={index < 2}
-                      />
-                      <div className="absolute inset-0 bg-black/0 group-hover:bg-emerald-500/10 transition-all duration-300" />
-                    </div>
-                  ))}
+                  <Image
+                    src="/photos/cam_img.png"
+                    alt="Professional Photo Editing"
+                    width={500}
+                    height={400}
+                    className="w-md h-auto object-cover"
+                    priority
+                  />
                 </motion.div>
               </motion.div>
 
-              {/* Second Marquee - Bottom to Top */}
+              {/* Editing Tools Overlay */}
               <motion.div
-                className="w-48 h-96 rounded-2xl overflow-hidden shadow-2xl relative mt-12 border-2 border-green-200/30"
-                whileHover={{ scale: 1.02 }}
-                transition={{ type: "spring", stiffness: 300 }}
+                className="absolute -top-4 -right-4 bg-white/90 backdrop-blur-sm rounded-xl p-3 shadow-lg border border-emerald-200"
+                initial={{ opacity: 0, scale: 0, rotate: -45 }}
+                animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                transition={{ duration: 0.6, delay: 1 }}
+                whileHover={{ scale: 1.1, rotate: 5 }}
               >
+                <Wand2 className="w-6 h-6 text-emerald-600" />
+              </motion.div>
+
+              {/* Quality Badge */}
+              <motion.div
+                className="absolute -bottom-4 -left-4 bg-gradient-to-r from-emerald-600 to-green-500 text-white rounded-xl px-4 py-2 shadow-lg border border-emerald-400"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 1.2 }}
+                whileHover={{ scale: 1.05 }}
+              >
+                <div className="flex items-center gap-2 text-sm font-semibold">
+                  <Sparkles className="w-4 h-4" />
+                  HD Quality
+                </div>
+              </motion.div>
+
+              {/* Floating particles around photo */}
+              {[1, 2, 3, 4].map((i) => (
                 <motion.div
-                  className="flex flex-col"
-                  variants={marqueeVariants.verticalReverse}
-                  animate="animate"
-                >
-                  {duplicatedImages.map((image, index) => (
-                    <div key={`desktop-2-${index}`} className="w-48 h-96 relative flex-shrink-0 group">
-                      <Image
-                        src={image}
-                        alt={`Photo editing sample ${index + 1}`}
-                        fill
-                        className="object-cover group-hover:scale-110 transition-transform duration-500"
-                        sizes="(max-width: 768px) 100vw, 384px"
-                      />
-                      <div className="absolute inset-0 bg-black/0 group-hover:bg-green-500/10 transition-all duration-300" />
-                    </div>
-                  ))}
-                </motion.div>
-              </motion.div>
-            </div>
+                  key={i}
+                  className="absolute w-2 h-2 bg-emerald-400 rounded-full"
+                  initial={{
+                    x: Math.random() * 100 - 50,
+                    y: Math.random() * 100 - 50,
+                    scale: 0
+                  }}
+                  animate={{
+                    x: Math.random() * 200 - 100,
+                    y: Math.random() * 200 - 100,
+                    scale: [0, 1, 0],
+                    opacity: [0, 1, 0]
+                  }}
+                  transition={{
+                    duration: 3 + i,
+                    repeat: Infinity,
+                    delay: i * 0.5,
+                    ease: "easeInOut"
+                  }}
+                />
+              ))}
+            </motion.div>
 
-            {/* Mobile Layout - Hidden on desktop */}
-            <div className="lg:hidden flex flex-col gap-6 items-center relative">
-              <motion.div
-                className="absolute -top-2 -left-2 text-emerald-600 bg-white/80 backdrop-blur-sm rounded-full p-1 shadow-lg"
-                animate={pulseAnimation}
-              >
-                <Zap className="w-4 h-4" />
-              </motion.div>
+            {/* Decorative elements around photo */}
+            <motion.div
+              className="absolute top-8 -right-6 text-green-500 bg-white/80 backdrop-blur-sm rounded-full p-3 shadow-lg"
+              animate={floatingAnimation}
+            >
+              <Palette className="w-6 h-6" />
+            </motion.div>
 
-              {/* First Marquee - Left to Right */}
-              <motion.div
-                className="w-72 h-48 rounded-2xl overflow-hidden shadow-2xl relative border-2 border-emerald-200/30"
-                whileHover={{ scale: 1.02 }}
-                transition={{ type: "spring", stiffness: 300 }}
-              >
-                <motion.div
-                  className="flex"
-                  variants={marqueeVariants.horizontal}
-                  animate="animate"
-                >
-                  {duplicatedImages.map((image, index) => (
-                    <div key={`mobile-1-${index}`} className="w-72 h-48 relative flex-shrink-0 group">
-                      <Image
-                        src={image}
-                        alt={`Photo editing sample ${index + 1}`}
-                        fill
-                        className="object-cover group-hover:scale-110 transition-transform duration-500"
-                        sizes="(max-width: 768px) 100vw, 288px"
-                        priority={index < 2}
-                      />
-                      <div className="absolute inset-0 bg-black/0 group-hover:bg-emerald-500/10 transition-all duration-300" />
-                    </div>
-                  ))}
-                </motion.div>
-              </motion.div>
-
-              {/* Second Marquee - Right to Left */}
-              <motion.div
-                className="w-72 h-48 rounded-2xl overflow-hidden shadow-2xl relative border-2 border-green-200/30"
-                whileHover={{ scale: 1.02 }}
-                transition={{ type: "spring", stiffness: 300 }}
-              >
-                <motion.div
-                  className="flex"
-                  variants={marqueeVariants.horizontalReverse}
-                  animate="animate"
-                >
-                  {duplicatedImages.map((image, index) => (
-                    <div key={`mobile-2-${index}`} className="w-72 h-48 relative flex-shrink-0 group">
-                      <Image
-                        src={image}
-                        alt={`Photo editing sample ${index + 1}`}
-                        fill
-                        className="object-cover group-hover:scale-110 transition-transform duration-500"
-                        sizes="(max-width: 768px) 100vw, 288px"
-                      />
-                      <div className="absolute inset-0 bg-black/0 group-hover:bg-green-500/10 transition-all duration-300" />
-                    </div>
-                  ))}
-                </motion.div>
-              </motion.div>
-            </div>
+            <motion.div
+              className="absolute bottom-12 -left-6 text-emerald-500 bg-white/80 backdrop-blur-sm rounded-full p-3 shadow-lg"
+              animate={rotatingAnimation}
+            >
+              <Aperture className="w-7 h-7" />
+            </motion.div>
           </motion.div>
         </div>
       </div>
@@ -473,7 +420,7 @@ const Hero = () => {
         className="absolute bottom-32 left-1/4 text-emerald-400 bg-white/50 backdrop-blur-sm rounded-full p-2 shadow-lg"
         animate={rotatingAnimation}
       >
-        <Clock className="w-5 h-5" />
+        <Aperture className="w-5 h-5" />
       </motion.div>
     </motion.div>
   );
