@@ -282,19 +282,40 @@ const Hero = () => {
               initial="initial"
               animate="animate"
             >
-              {/* Photo Shadow */}
+              {/* Enhanced Animated Shadow */}
               <motion.div
-                className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 w-4/5 h-6 rounded-full blur-xl"
+                className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 w-4/5 h-8 rounded-full"
                 animate={{
                   scale: [0.8, 1.2, 0.8],
-                  opacity: [0.3, 0.5, 0.3]
+                  opacity: [0.2, 0.4, 0.2],
+                  y: [0, -5, 0]
                 }}
                 transition={{
                   duration: 3,
                   repeat: Infinity,
                   ease: "easeInOut"
                 }}
-              />
+              >
+                <div className="w-full h-full bg-gradient-to-r from-emerald-400/30 to-green-400/30 blur-xl rounded-full"></div>
+                <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-emerald-500/20 to-green-500/20 blur-lg rounded-full"></div>
+              </motion.div>
+
+              {/* Multi-layer shadow effect */}
+              <motion.div
+                className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 w-3/4 h-4 rounded-full blur-lg"
+                animate={{
+                  scale: [0.9, 1.1, 0.9],
+                  opacity: [0.3, 0.5, 0.3]
+                }}
+                transition={{
+                  duration: 2.5,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                  delay: 0.5
+                }}
+              >
+                <div className="w-full h-full bg-emerald-300/40 rounded-full"></div>
+              </motion.div>
 
               {/* Main Photo */}
               <motion.div
